@@ -16,4 +16,12 @@ class AppController extends AbstractController
             'path' => 'src/Controller/AppController.php',
         ]);
     }
+    #[Route('/app', name: 'app_index')]
+    public function app(): Response
+    {
+        return $this->json([
+            'message' => 'App!',
+            'path' => 'src/Controller/AppController.php',
+        ]);
+    }
 }
