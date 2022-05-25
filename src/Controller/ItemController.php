@@ -75,7 +75,8 @@ class ItemController extends AbstractController
     #[Route('/{id}', name: 'app_item_delete', methods: ['POST'])]
     public function delete(Request $request, Item $item, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$item->getId(), $request->request->get('_token'))) {
+        $token = $request->request->get('_token');
+        if (($token === null || is_string($token)) && $this->isCsrfTokenValid('delete'.$item->getId(), $token)) {
             $entityManager->remove($item);
             $entityManager->flush();
         }
