@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Item;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,11 +14,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ItemController extends AbstractController
 {
     #[Route('/', name: 'app_item_index', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(ItemRepository $itemRepository): Response
     {
-        $items = $entityManager
-            ->getRepository(Item::class)
-            ->findAll();
+        $items = $itemRepository->findAll();
 
         return $this->render('item/index.html.twig', [
             'items' => $items,
@@ -27,15 +24,14 @@ class ItemController extends AbstractController
     }
 
     #[Route('/new', name: 'app_item_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, ItemRepository $itemRepository): Response
     {
         $item = new Item();
         $form = $this->createForm(ItemType::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($item);
-            $entityManager->flush();
+            $itemRepository->add($item, true);
 
             return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -55,13 +51,13 @@ class ItemController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_item_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Item $item, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Item $item, ItemRepository $itemRepository): Response
     {
         $form = $this->createForm(ItemType::class, $item);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $itemRepository->add($item, true);
 
             return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -73,12 +69,11 @@ class ItemController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_item_delete', methods: ['POST'])]
-    public function delete(Request $request, Item $item, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Item $item, ItemRepository $itemRepository): Response
     {
         $token = $request->request->get('_token');
-        if (($token === null || is_string($token)) && $this->isCsrfTokenValid('delete'.$item->getId(), $token)) {
-            $entityManager->remove($item);
-            $entityManager->flush();
+        if (($token === null || is_string($token)) && $this->isCsrfTokenValid('delete'.($item->getId() ?? ''), $token)) {
+            $itemRepository->remove($item, true);
         }
 
         return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);

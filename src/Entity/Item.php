@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
@@ -11,26 +12,26 @@ class Item
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $model;
+    private ?string $model = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private $price;
+    private ?string $price = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $buyDate;
+    private ?DateTimeInterface $buyDate = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $planToUseInMonths;
+    private ?int $planToUseInMonths = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private $owner;
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -73,12 +74,12 @@ class Item
         return $this;
     }
 
-    public function getBuyDate(): ?\DateTimeInterface
+    public function getBuyDate(): ?DateTimeInterface
     {
         return $this->buyDate;
     }
 
-    public function setBuyDate(?\DateTimeInterface $buyDate): self
+    public function setBuyDate(?DateTimeInterface $buyDate): self
     {
         $this->buyDate = $buyDate;
 

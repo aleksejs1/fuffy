@@ -1,7 +1,5 @@
 FROM php:8.1-fpm
 
-ARG APCU_VERSION=5.1.18
-
 RUN apt-get update \
     && apt-get install -y --no-install-recommends vim curl debconf subversion git apt-transport-https apt-utils \
     build-essential locales acl mailutils wget nodejs zip unzip \
@@ -29,7 +27,7 @@ RUN apt-get update -y && apt-get install -y libwebp-dev libjpeg62-turbo-dev libp
 RUN docker-php-ext-install gd
 
 #INSTALL APCU
-RUN pecl install apcu-${APCU_VERSION} && docker-php-ext-enable apcu
+RUN pecl install apcu && docker-php-ext-enable apcu
 RUN echo "extension=apcu.so" >> /usr/local/etc/php/php.ini
 #RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini
 #RUN echo "apc.enable=1" >> /usr/local/etc/php/php.ini
