@@ -72,7 +72,7 @@ class ItemController extends AbstractController
     public function delete(Request $request, Item $item, ItemRepository $itemRepository): Response
     {
         $token = $request->request->get('_token');
-        if (($token === null || is_string($token)) && $this->isCsrfTokenValid('delete'.($item->getId() ?? ''), $token)) {
+        if ((null === $token || is_string($token)) && $this->isCsrfTokenValid('delete'.($item->getId() ?? ''), $token)) {
             $itemRepository->remove($item, true);
         }
 

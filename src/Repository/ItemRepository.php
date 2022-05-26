@@ -15,10 +15,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Item|null findOneBy(array $criteria, array $orderBy = null)
  * @psalm-method list<Item> findAll()
  *
- * @method Item[]    findAll()
+ * @method Item[] findAll()
  * @psalm-method list<Item> findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *
- * @method Item[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Item[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ItemRepository extends ServiceEntityRepository
 {
