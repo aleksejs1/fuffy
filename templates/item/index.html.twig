@@ -13,8 +13,15 @@
                 <th>Model</th>
                 <th>Price</th>
                 <th>BuyDate</th>
-                <th>PlanToUseInMonths</th>
                 <th>Months in use</th>
+                <th>Month price</th>
+                <th>Plan To Use In Months</th>
+                <th>Expire after</th>
+                <th>Current value</th>
+                <th>Plan month value</th>
+                <th>Can change</th>
+                <th>Total years</th>
+                <th>Extra years</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -26,8 +33,15 @@
                 <td>{{ item.model }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.buyDate ? item.buyDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ item.getMonthsInUseString }}</td>
+                <td>{{ item.monthPrice }}</td>
                 <td>{{ item.planToUseInMonths }}</td>
-                <td>{{ item.monthsInUse }}</td>
+                <td>{{ item.expireAfter }}</td>
+                <td>{{ item.currentValue }}</td>
+                <td>{{ item.planMonthValue }}</td>
+                <td>{{ item.canChange }}</td>
+                <td>{{ item.totalYears }}</td>
+                <td>{{ item.extraYears }}</td>
                 <td>
                     <a href="{{ path('app_item_show', {'id': item.id}) }}">show</a>
                     <a href="{{ path('app_item_edit', {'id': item.id}) }}">edit</a>
