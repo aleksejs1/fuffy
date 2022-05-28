@@ -11,16 +11,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/item')]
+#[Route('/app/item')]
 class ItemController extends AbstractController
 {
     #[Route('/', name: 'app_item_index', methods: ['GET'])]
     public function index(ItemRepository $itemRepository): Response
     {
-        $items = $itemRepository->findAll();
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw new \Exception('User expected.');
+        }
 
         return $this->render('item/index.html.twig', [
-            'items' => $items,
+            'items' => $user->getItems(),
         ]);
     }
 

@@ -69,10 +69,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     * @psalm-suppress MixedReturnTypeCoercion
      */
     public function getRoles(): array
     {
-        return empty($this->roles) ? $this->roles : ['ROLE_USER'];
+        return empty($this->roles) ? ['ROLE_USER'] : $this->roles;
     }
 
     public function setRoles(array $roles): self

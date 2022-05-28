@@ -26,3 +26,12 @@ or
 ```
 php bin/console doctrine:fixtures:load
 ```
+
+### Docker
+```
+docker-compose up
+```
+php container
+```
+docker exec -it fuffy_php /bin/bash
+```
