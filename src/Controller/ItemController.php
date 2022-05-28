@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Item;
+use App\Entity\User;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +27,11 @@ class ItemController extends AbstractController
     #[Route('/new', name: 'app_item_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ItemRepository $itemRepository): Response
     {
-        $item = new Item();
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw new \Exception('User expected');
+        }
+        $item = new Item($user);
         $form = $this->createForm(ItemType::class, $item);
         $form->handleRequest($request);
 

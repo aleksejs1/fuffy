@@ -1,17 +1,28 @@
-Fuffy
+# Fuffy
 
-Psalm
+## Commands
+
+### Psalm
 ```
 ./vendor/bin/psalm
 ```
 
-Tests
+### Tests
 ```
 php bin/phpunit
 ```
 
-php-cs-fixer
+### Php-cs-fixer
 ```
 php ./vendor/bin/php-cs-fixer fix ./src
 php ./vendor/bin/php-cs-fixer fix ./tests
+```
+
+### Fixtures
+```
+php bin/console --env=test doctrine:fixtures:load
+```
+or
+```
+php bin/console doctrine:fixtures:load
 ```
