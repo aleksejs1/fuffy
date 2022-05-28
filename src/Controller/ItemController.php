@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
 use App\Security\Voter\ItemVoter;
+use App\Service\ItemService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ItemController extends AbstractController
 {
     #[Route('/', name: 'app_item_index', methods: ['GET'])]
-    public function index(ItemRepository $itemRepository): Response
+    public function index(ItemService $itemService): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
@@ -24,7 +25,7 @@ class ItemController extends AbstractController
         }
 
         return $this->render('item/index.html.twig', [
-            'items' => $user->getItems(),
+            'items' => $itemService->itemArrayToDto($user->getItems()->toArray()),
         ]);
     }
 
