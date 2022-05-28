@@ -126,7 +126,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
-            $item->setOwner($this);
+            if ($item->getOwner() !== $this) {
+                $item->setOwner($this);
+            }
         }
 
         return $this;
@@ -137,7 +139,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->items->removeElement($item)) {
             // set the owning side to null (unless already changed)
             if ($item->getOwner() === $this) {
-                $item->setOwner(null);
+                throw new \InvalidArgumentException('Can\'t remove item from user. Remove it from db.');
             }
         }
 

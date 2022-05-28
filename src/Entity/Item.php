@@ -21,7 +21,7 @@ class Item
     private ?string $model = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private ?string $price = null;
+    private ?string $price = '0.00';
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $buyDate = null;
@@ -31,7 +31,13 @@ class Item
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'items')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $owner = null;
+    private User $owner;
+
+    public function __construct(User $owner)
+    {
+        $this->owner = $owner;
+        $owner->addItem($this);
+    }
 
     public function getId(): ?int
     {
@@ -98,14 +104,27 @@ class Item
         return $this;
     }
 
-    public function getOwner(): ?User
+    public function getOwner(): User
     {
         return $this->owner;
     }
 
-    public function setOwner(?User $owner): self
+    public function setOwner(User $owner): self
     {
+        if ($this->getOwner() === $owner) {
+            return $this;
+        }
+
+        $oldOwner = $this->getOwner();
+
         $this->owner = $owner;
+        if (!$this->getOwner()->getItems()->contains($this)) {
+            $this->getOwner()->addItem($this);
+        }
+
+        if ($oldOwner->getItems()->contains($this)) {
+            $oldOwner->removeItem($this);
+        }
 
         return $this;
     }
