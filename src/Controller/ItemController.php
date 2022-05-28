@@ -6,6 +6,7 @@ use App\Entity\Item;
 use App\Entity\User;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
+use App\Security\Voter\ItemVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,6 +54,8 @@ class ItemController extends AbstractController
     #[Route('/{id}', name: 'app_item_show', methods: ['GET'])]
     public function show(Item $item): Response
     {
+        $this->denyAccessUnlessGranted(ItemVoter::VIEW, $item);
+
         return $this->render('item/show.html.twig', [
             'item' => $item,
         ]);
@@ -61,6 +64,7 @@ class ItemController extends AbstractController
     #[Route('/{id}/edit', name: 'app_item_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Item $item, ItemRepository $itemRepository): Response
     {
+        $this->denyAccessUnlessGranted(ItemVoter::EDIT, $item);
         $form = $this->createForm(ItemType::class, $item);
         $form->handleRequest($request);
 
@@ -79,6 +83,7 @@ class ItemController extends AbstractController
     #[Route('/{id}', name: 'app_item_delete', methods: ['POST'])]
     public function delete(Request $request, Item $item, ItemRepository $itemRepository): Response
     {
+        $this->denyAccessUnlessGranted(ItemVoter::EDIT, $item);
         $token = $request->request->get('_token');
         if ((null === $token || is_string($token)) && $this->isCsrfTokenValid('delete'.($item->getId() ?? ''), $token)) {
             $itemRepository->remove($item, true);

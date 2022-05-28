@@ -20,9 +20,25 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
         if (!$testUser instanceof User || !$anotherTestUser instanceof User) {
             throw new \Exception('User expected');
         }
-        $item1 = new Item($testUser);
+        $buyDate = (new \DateTime())->sub(new \DateInterval('P6M'));
+        $item1 = new Item(
+            owner: $testUser,
+            name: 'Notebook',
+            model: 'Acer Aspire E5-573G',
+            price: '614.02',
+            buyDate: $buyDate,
+            planToUseInMonths: 60
+        );
         $manager->persist($item1);
-        $item2 = new Item($testUser);
+        $anotherBuyDate = (new \DateTime())->sub(new \DateInterval('P75D'));
+        $item2 = new Item(
+            owner: $testUser,
+            name: 'Phone',
+            model: 'Samsung Galaxy S10',
+            price: '529',
+            buyDate: $anotherBuyDate,
+            planToUseInMonths: 24
+        );
         $manager->persist($item2);
 
         $itemOfAnotherUser = new Item($anotherTestUser);

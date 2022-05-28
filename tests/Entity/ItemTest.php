@@ -28,4 +28,22 @@ class ItemTest extends TestCase
         $this->assertContains($item, $user2->getItems());
         $this->assertNotContains($item, $user1->getItems());
     }
+
+    /**
+     * @covers \App\Entity\Item::setPrice
+     * @covers \App\Entity\Item::getPrice
+     */
+    public function testPrice(): void
+    {
+        $user1 = new User();
+        $item = new Item($user1);
+
+        $this->assertEquals('0.00', $item->getPrice());
+        $price = '1.01';
+        $item->setPrice($price);
+        $this->assertEquals($price, $item->getPrice());
+        $priceWithComa = '1,01';
+        $item->setPrice($priceWithComa);
+        $this->assertEquals($price, $item->getPrice());
+    }
 }

@@ -14,28 +14,26 @@ class Item
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $name = null;
+    public function __construct(
+        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'items')]
+        #[ORM\JoinColumn(nullable: false)]
+        private User $owner,
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $model = null;
+        #[ORM\Column(type: 'string', length: 255, nullable: true)]
+        private ?string $name = null,
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private ?string $price = '0.00';
+        #[ORM\Column(type: 'string', length: 255, nullable: true)]
+        private ?string $model = null,
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTimeInterface $buyDate = null;
+        #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+        private ?string $price = '0.00',
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $planToUseInMonths = null;
+        #[ORM\Column(type: 'datetime', nullable: true)]
+        private ?DateTimeInterface $buyDate = new \DateTime(),
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $owner;
-
-    public function __construct(User $owner)
-    {
-        $this->owner = $owner;
+        #[ORM\Column(type: 'integer', nullable: true)]
+        private ?int $planToUseInMonths = null,
+    ) {
         $owner->addItem($this);
     }
 
@@ -75,7 +73,7 @@ class Item
 
     public function setPrice(string $price): self
     {
-        $this->price = $price;
+        $this->price = str_replace(',', '.', $price);
 
         return $this;
     }
