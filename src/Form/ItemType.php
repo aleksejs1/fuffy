@@ -16,6 +16,7 @@ class ItemType extends AbstractType
             ->add('model')
             ->add('price')
             ->add('buyDate')
+            ->add('endDate')
             ->add('planToUseInMonths')
         ;
     }

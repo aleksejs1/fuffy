@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ItemRepository;
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
@@ -11,7 +12,7 @@ class Item
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['unsigned' => true])]
     private ?int $id = null;
 
     public function __construct(
@@ -19,19 +20,22 @@ class Item
         #[ORM\JoinColumn(nullable: false)]
         private User $owner,
 
-        #[ORM\Column(type: 'string', length: 255, nullable: true)]
+        #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
         private ?string $name = null,
 
-        #[ORM\Column(type: 'string', length: 255, nullable: true)]
+        #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
         private ?string $model = null,
 
-        #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+        #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
         private ?string $price = '0.00',
 
-        #[ORM\Column(type: 'datetime', nullable: true)]
+        #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
         private ?DateTimeInterface $buyDate = new \DateTime(),
 
-        #[ORM\Column(type: 'integer', nullable: true)]
+        #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+        private ?DateTimeInterface $endDate = null,
+
+        #[ORM\Column(type: Types::INTEGER, nullable: true)]
         private ?int $planToUseInMonths = null,
     ) {
         $owner->addItem($this);
@@ -86,6 +90,18 @@ class Item
     public function setBuyDate(?DateTimeInterface $buyDate): self
     {
         $this->buyDate = $buyDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?DateTimeInterface $endDate): self
+    {
+        $this->endDate = $endDate;
 
         return $this;
     }

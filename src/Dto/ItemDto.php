@@ -16,6 +16,7 @@ class ItemDto
     private ?string $model;
     private ?string $price;
     private ?DateTimeInterface $buyDate;
+    private ?DateTimeInterface $endDate;
     private ?int $planToUseInMonths;
 
     public function __construct(Item $item)
@@ -25,6 +26,7 @@ class ItemDto
         $this->model = $item->getModel();
         $this->price = $item->getPrice();
         $this->buyDate = $item->getBuyDate();
+        $this->endDate = $item->getEndDate();
         $this->planToUseInMonths = $item->getPlanToUseInMonths();
         $this->owner = $item->getOwner();
     }
@@ -54,6 +56,11 @@ class ItemDto
         return $this->buyDate;
     }
 
+    public function getEndDate(): ?DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
     public function getPlanToUseInMonths(): ?int
     {
         return $this->planToUseInMonths;
@@ -71,7 +78,10 @@ class ItemDto
             return null;
         }
 
-        return Carbon::instance($buyDate)->diffInMonths(CarbonImmutable::now());
+        $endDate = $this->getEndDate();
+        $endDate = $endDate ? Carbon::instance($endDate) : CarbonImmutable::now();
+
+        return Carbon::instance($buyDate)->diffInMonths($endDate);
     }
 
     public function getMonthsInUseString(): ?string
@@ -81,7 +91,10 @@ class ItemDto
             return null;
         }
 
-        return (string) round(Carbon::instance($buyDate)->floatDiffInMonths(CarbonImmutable::now()), 1);
+        $endDate = $this->getEndDate();
+        $endDate = $endDate ? Carbon::instance($endDate) : CarbonImmutable::now();
+
+        return (string) round(Carbon::instance($buyDate)->floatDiffInMonths($endDate), 1);
     }
 
     public function getMonthPrice(): ?string
@@ -191,7 +204,10 @@ class ItemDto
             return null;
         }
 
-        return Carbon::instance($buyDate)->floatDiffInYears(CarbonImmutable::now());
+        $endDate = $this->getEndDate();
+        $endDate = $endDate ? Carbon::instance($endDate) : CarbonImmutable::now();
+
+        return Carbon::instance($buyDate)->floatDiffInYears($endDate);
     }
 
     public function getExtraYears(): ?string

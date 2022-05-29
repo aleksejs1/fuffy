@@ -35,3 +35,13 @@ php container
 ```
 docker exec -it fuffy_php /bin/bash
 ```
+
+### Migrations
+```
+php bin/console doctrine:migration:migrate
+```
+
+Schema validation
+```
+php bin/console doctrine:schema:validate
+```
