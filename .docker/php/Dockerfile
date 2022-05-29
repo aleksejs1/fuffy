@@ -19,7 +19,7 @@ RUN apt-get install -y zlib1g-dev libicu-dev g++ \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl
 
-RUN docker-php-ext-install pdo pdo_mysql zip
+RUN docker-php-ext-install pdo pdo_mysql zip bcmath
 
 RUN apt-get update -y && apt-get install -y libwebp-dev libjpeg62-turbo-dev libpng-dev libxpm-dev \
     libfreetype6-dev
@@ -28,7 +28,7 @@ RUN docker-php-ext-install gd
 
 #INSTALL APCU
 RUN pecl install apcu && docker-php-ext-enable apcu
-RUN echo "extension=apcu.so" >> /usr/local/etc/php/php.ini
+#RUN echo "extension=apcu.so" >> /usr/local/etc/php/php.ini
 #RUN echo "apc.enable_cli=1" >> /usr/local/etc/php/php.ini
 #RUN echo "apc.enable=1" >> /usr/local/etc/php/php.ini
 #APCU

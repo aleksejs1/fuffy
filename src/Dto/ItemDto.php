@@ -4,6 +4,8 @@ namespace App\Dto;
 
 use App\Entity\Item;
 use App\Entity\User;
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use DateTimeInterface;
 
 class ItemDto
@@ -64,99 +66,146 @@ class ItemDto
 
     public function getMonthsInUse(): ?int
     {
-        if (!$this->buyDate) {
+        $buyDate = $this->getBuyDate();
+        if (null === $buyDate) {
             return null;
         }
 
-        $diff = (new \DateTime())->diff($this->buyDate);
-
-        return ((int) $diff->format('%m')) + (((int) $diff->format('%y')) * 12);
+        return Carbon::instance($buyDate)->diffInMonths(CarbonImmutable::now());
     }
 
     public function getMonthsInUseString(): ?string
     {
-        if (!$this->buyDate) {
+        $buyDate = $this->getBuyDate();
+        if (null === $buyDate) {
             return null;
         }
 
-        $diff = (new \DateTime())->diff($this->buyDate);
-        $months = (string) (((int) $diff->format('%m')) + (((int) $diff->format('%y')) * 12));
-
-        return $months.'.'.(round((int) $diff->format('%d') / 30));
+        return (string) round(Carbon::instance($buyDate)->floatDiffInMonths(CarbonImmutable::now()), 1);
     }
 
     public function getMonthPrice(): ?string
     {
-        $monthsInUse = $this->getMonthsInUse();
-        if ($this->price && $this->buyDate && null !== $monthsInUse && $monthsInUse > 0) {
-            return (string) round((float) $this->price / $monthsInUse, 2);
+        $price = $this->getPrice();
+        if (!is_numeric($price)) {
+            return null;
         }
 
-        return null;
+        $monthsInUse = $this->getMonthsInUseString();
+        if (!is_numeric($monthsInUse) || 0.0 === ((float) $monthsInUse)) {
+            return null;
+        }
+
+        return bcdiv($price, $monthsInUse, 2);
     }
 
     public function getExpireAfter(): ?int
     {
-        $monthsInUse = $this->getMonthsInUse();
-        if ($this->buyDate && $this->planToUseInMonths && null !== $monthsInUse) {
-            return $this->planToUseInMonths - $monthsInUse;
+        $planToUseInMonths = $this->getPlanToUseInMonths();
+        if (null === $planToUseInMonths) {
+            return null;
         }
 
-        return null;
+        $monthsInUse = $this->getMonthsInUse();
+        if (null === $monthsInUse) {
+            return null;
+        }
+
+        return $planToUseInMonths - $monthsInUse;
     }
 
     public function getPlanMonthValue(): ?string
     {
-        if ($this->price && $this->planToUseInMonths) {
-            return (string) round((float) $this->price / $this->planToUseInMonths, 2);
+        $price = $this->getPrice();
+        if (!is_numeric($price)) {
+            return null;
         }
 
-        return null;
+        $planToUseInMonths = $this->getPlanToUseInMonths();
+        if (null === $planToUseInMonths || 0 === $planToUseInMonths) {
+            return null;
+        }
+
+        return bcdiv($price, (string) $planToUseInMonths, 2);
     }
 
     public function getCurrentValue(): ?string
     {
-        $monthsInUse = $this->getMonthsInUse();
-        if (null !== $this->price
-            && null !== $this->planToUseInMonths
-            && null !== $this->buyDate
-            && null !== $monthsInUse
-        ) {
-            $secondHandTotalPrice = (float) $this->price * 0.85;
-            $usagePrice = $secondHandTotalPrice / $this->planToUseInMonths * $monthsInUse;
-
-            return (string) round(max($secondHandTotalPrice - $usagePrice, 0), 2);
+        $planToUseInMonths = $this->getPlanToUseInMonths();
+        if (null === $planToUseInMonths || 0 === $planToUseInMonths) {
+            return null;
         }
 
-        return null;
+        $price = $this->getPrice();
+        if (!is_numeric($price) || 0.0 === ((float) $price)) {
+            return null;
+        }
+
+        $monthsInUse = $this->getMonthsInUseString();
+        if (!is_numeric($monthsInUse)) {
+            return null;
+        }
+
+        $secondHandTotalPrice = bcmul($price, '0.85', 5);
+        $monthPrice = bcdiv($secondHandTotalPrice, (string) $planToUseInMonths, 5);
+        $usagePrice = bcmul($monthPrice, $monthsInUse, 5);
+        $currentValue = bcsub($secondHandTotalPrice, $usagePrice, 2);
+
+        return '-' === $currentValue[0] ? '0' : $currentValue;
     }
 
     public function getCanChange(): ?string
     {
-        if ($this->planToUseInMonths && $this->buyDate) {
-            return $this->planToUseInMonths <= $this->getMonthsInUse() ? $this->getPrice() : null;
+        $price = $this->getPrice();
+        if (null === $price) {
+            return null;
         }
 
-        return null;
+        $planToUseInMonths = $this->getPlanToUseInMonths();
+        if (null === $planToUseInMonths) {
+            return null;
+        }
+
+        $monthsInUse = $this->getMonthsInUse();
+        if (null === $monthsInUse) {
+            return null;
+        }
+
+        return $this->planToUseInMonths <= $this->getMonthsInUse() ? $price : null;
     }
 
     public function getTotalYears(): ?string
     {
-        $monthsInUse = $this->getMonthsInUse();
-        if ($monthsInUse) {
-            return (string) round($monthsInUse / 12, 1);
+        $yearsInUse = $this->getYearsInUse();
+        if (null === $yearsInUse) {
+            return null;
         }
 
-        return null;
+        return (string) round($yearsInUse, 1);
+    }
+
+    public function getYearsInUse(): ?float
+    {
+        $buyDate = $this->getBuyDate();
+        if (null === $buyDate) {
+            return null;
+        }
+
+        return Carbon::instance($buyDate)->floatDiffInYears(CarbonImmutable::now());
     }
 
     public function getExtraYears(): ?string
     {
         $monthsInUse = $this->getMonthsInUse();
-        if ($monthsInUse && $this->planToUseInMonths) {
-            return (string) round(($monthsInUse - $this->planToUseInMonths) / 12, 1);
+        if (null === $monthsInUse) {
+            return null;
         }
 
-        return null;
+        $planToUseInMonths = $this->getPlanToUseInMonths();
+        if (null === $planToUseInMonths) {
+            return null;
+        }
+
+        return (string) round(($monthsInUse - $planToUseInMonths) / 12, 1);
     }
 }
