@@ -71,7 +71,7 @@ class ItemDto
         return $this->owner;
     }
 
-    public function getMonthsInUse(): ?int
+    private function getMonthsInUseFloat(): ?float
     {
         $buyDate = $this->getBuyDate();
         if (null === $buyDate) {
@@ -81,20 +81,21 @@ class ItemDto
         $endDate = $this->getEndDate();
         $endDate = $endDate ? Carbon::instance($endDate) : CarbonImmutable::now();
 
-        return Carbon::instance($buyDate)->diffInMonths($endDate);
+        return Carbon::instance($buyDate)->floatDiffInMonths($endDate);
+    }
+
+    public function getMonthsInUse(): ?int
+    {
+        $floatMonthsInUse = $this->getMonthsInUseFloat();
+
+        return $floatMonthsInUse ? (int) round($floatMonthsInUse) : null;
     }
 
     public function getMonthsInUseString(): ?string
     {
-        $buyDate = $this->getBuyDate();
-        if (null === $buyDate) {
-            return null;
-        }
+        $floatMonthsInUse = $this->getMonthsInUseFloat();
 
-        $endDate = $this->getEndDate();
-        $endDate = $endDate ? Carbon::instance($endDate) : CarbonImmutable::now();
-
-        return (string) round(Carbon::instance($buyDate)->floatDiffInMonths($endDate), 1);
+        return $floatMonthsInUse ? (string) round($floatMonthsInUse, 1) : null;
     }
 
     public function getMonthPrice(): ?string
