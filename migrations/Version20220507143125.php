@@ -25,7 +25,7 @@ final class Version20220507143125 extends AbstractMigration
                 price NUMERIC(10, 2) NOT NULL,
                 buy_date DATETIME DEFAULT NULL,
                 end_date DATETIME DEFAULT NULL,
-                plan_to_use_in_months INT DEFAULT NULL,
+                plan_to_use_in_months INT UNSIGNED DEFAULT NULL,
                 INDEX IDX_1F1B251E7E3C61F9 (owner_id),
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB

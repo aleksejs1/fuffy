@@ -49,6 +49,47 @@ class ItemDtoTest extends TestCase
     }
 
     /**
+     * @covers \App\Dto\ItemDto::getPlanMonthValue
+     * @covers \App\Dto\ItemDto::getPlanToUseInMonths
+     */
+    public function testPlanMonthValue(): void
+    {
+        $owner = new User();
+        $item = new Item(owner: $owner, price: '60', planToUseInMonths: 24);
+        $itemDto = new ItemDto($item);
+        $this->assertEquals('2.50', $itemDto->getPlanMonthValue());
+
+        $itemWithoutPrice = new Item(owner: $owner, price: null, planToUseInMonths: 24);
+        $itemWithoutPriceDto = new ItemDto($itemWithoutPrice);
+        $this->assertNull($itemWithoutPriceDto->getPlanMonthValue());
+
+        $itemWithoutPlanToUseInMonths = new Item(owner: $owner, price: '60');
+        $itemWithoutPlanToUseInMonthsDto = new ItemDto($itemWithoutPlanToUseInMonths);
+        $this->assertNull($itemWithoutPlanToUseInMonthsDto->getPlanToUseInMonths());
+        $this->assertNull($itemWithoutPlanToUseInMonthsDto->getPlanMonthValue());
+
+        $itemZeroPlanToUseInMonths = new Item(owner: $owner, price: '60', planToUseInMonths: 0);
+        $itemZeroPlanToUseInMonthsDto = new ItemDto($itemZeroPlanToUseInMonths);
+        $this->assertNull($itemZeroPlanToUseInMonthsDto->getPlanMonthValue());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $itemNegativePlanToUseInMonths = new Item(owner: $owner, price: '60', planToUseInMonths: -12);
+    }
+
+    /**
+     * @covers \App\Dto\ItemDto::getPlanMonthValue
+     * @covers \App\Dto\ItemDto::getPlanToUseInMonths
+     */
+    public function testSetPlanToUseInMonthsException(): void
+    {
+        $owner = new User();
+        $item = new Item(owner: $owner);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $item->setPlanToUseInMonths(-12);
+    }
+
+    /**
      * @covers \App\Dto\ItemDto::getMonthPrice
      * @covers \App\Dto\ItemDto::getMonthsInUseString
      * @covers \App\Dto\ItemDto::getMonthsInUse
@@ -64,6 +105,7 @@ class ItemDtoTest extends TestCase
         $item = new Item(owner: $owner, price: '60', buyDate: $buyDate, planToUseInMonths: 24);
         $itemDto = new ItemDto($item);
         $this->assertEquals('60.00', $itemDto->getMonthPrice());
+        $this->assertEquals('2.50', $itemDto->getPlanMonthValue());
         $this->assertEquals('1', $itemDto->getMonthsInUseString());
         $this->assertEquals(1, $itemDto->getMonthsInUse());
         $this->assertEquals(23, $itemDto->getExpireAfter());

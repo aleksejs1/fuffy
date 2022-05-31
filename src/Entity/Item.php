@@ -35,10 +35,14 @@ class Item
         #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
         private ?DateTimeInterface $endDate = null,
 
-        #[ORM\Column(type: Types::INTEGER, nullable: true)]
+        #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['unsigned' => true])]
         private ?int $planToUseInMonths = null,
     ) {
         $owner->addItem($this);
+
+        if ($planToUseInMonths!== null && $planToUseInMonths < 0) {
+            throw new \InvalidArgumentException('Item::$planToUseInMonths should be positive');
+        }
     }
 
     public function getId(): ?int
@@ -113,6 +117,10 @@ class Item
 
     public function setPlanToUseInMonths(?int $planToUseInMonths): self
     {
+        if ($planToUseInMonths!== null && $planToUseInMonths < 0) {
+            throw new \InvalidArgumentException('Item::$planToUseInMonths should be positive');
+        }
+
         $this->planToUseInMonths = $planToUseInMonths;
 
         return $this;
