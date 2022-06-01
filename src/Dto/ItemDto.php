@@ -10,65 +10,48 @@ use DateTimeInterface;
 
 class ItemDto
 {
-    private ?int $id = null;
-    private User $owner;
-    private ?string $name;
-    private ?string $model;
-    private ?string $price;
-    private ?DateTimeInterface $buyDate;
-    private ?DateTimeInterface $endDate;
-    private ?int $planToUseInMonths;
-
-    public function __construct(Item $item)
+    public function __construct(private readonly Item $item)
     {
-        $this->id = $item->getId();
-        $this->name = $item->getName();
-        $this->model = $item->getModel();
-        $this->price = $item->getPrice();
-        $this->buyDate = $item->getBuyDate();
-        $this->endDate = $item->getEndDate();
-        $this->planToUseInMonths = $item->getPlanToUseInMonths();
-        $this->owner = $item->getOwner();
     }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->item->getId();
     }
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->item->getName();
     }
 
     public function getModel(): ?string
     {
-        return $this->model;
+        return $this->item->getModel();
     }
 
     public function getPrice(): ?string
     {
-        return $this->price;
+        return $this->item->getPrice();
     }
 
     public function getBuyDate(): ?DateTimeInterface
     {
-        return $this->buyDate;
+        return $this->item->getBuyDate();
     }
 
     public function getEndDate(): ?DateTimeInterface
     {
-        return $this->endDate;
+        return $this->item->getEndDate();
     }
 
     public function getPlanToUseInMonths(): ?int
     {
-        return $this->planToUseInMonths;
+        return $this->item->getPlanToUseInMonths();
     }
 
     public function getOwner(): User
     {
-        return $this->owner;
+        return $this->item->getOwner();
     }
 
     private function getMonthsInUseFloat(): ?float
@@ -185,7 +168,7 @@ class ItemDto
             return null;
         }
 
-        return $this->planToUseInMonths <= $this->getMonthsInUse() ? $price : null;
+        return $planToUseInMonths <= $this->getMonthsInUse() ? $price : null;
     }
 
     public function getTotalYears(): ?string

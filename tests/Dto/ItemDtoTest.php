@@ -46,6 +46,10 @@ class ItemDtoTest extends TestCase
         $item2 = new Item(owner: $owner, price: '60', buyDate: $buyDate);
         $itemDto2 = new ItemDto($item2);
         $this->assertEquals('10.00', $itemDto2->getMonthPrice());
+
+        $item3 = new Item(owner: $owner, price: null, buyDate: $buyDate);
+        $itemDto3 = new ItemDto($item3);
+        $this->assertNull($itemDto3->getMonthPrice());
     }
 
     /**
@@ -74,19 +78,6 @@ class ItemDtoTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $itemNegativePlanToUseInMonths = new Item(owner: $owner, price: '60', planToUseInMonths: -12);
-    }
-
-    /**
-     * @covers \App\Dto\ItemDto::getPlanMonthValue
-     * @covers \App\Dto\ItemDto::getPlanToUseInMonths
-     */
-    public function testSetPlanToUseInMonthsException(): void
-    {
-        $owner = new User();
-        $item = new Item(owner: $owner);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $item->setPlanToUseInMonths(-12);
     }
 
     /**

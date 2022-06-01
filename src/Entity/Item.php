@@ -39,10 +39,10 @@ class Item
         private ?int $planToUseInMonths = null,
     ) {
         $owner->addItem($this);
-
-        if ($planToUseInMonths!== null && $planToUseInMonths < 0) {
-            throw new \InvalidArgumentException('Item::$planToUseInMonths should be positive');
+        if (null !== $price) {
+            $this->setPrice($price);
         }
+        $this->setPlanToUseInMonths($this->planToUseInMonths);
     }
 
     public function getId(): ?int
@@ -81,7 +81,13 @@ class Item
 
     public function setPrice(string $price): self
     {
-        $this->price = str_replace(',', '.', $price);
+        $price = trim(str_replace(',', '.', $price));
+
+        if (!is_numeric($price) || '-' === $price[0]) {
+            throw new \InvalidArgumentException('Item::$price should be numeric');
+        }
+
+        $this->price = $price;
 
         return $this;
     }
@@ -117,7 +123,7 @@ class Item
 
     public function setPlanToUseInMonths(?int $planToUseInMonths): self
     {
-        if ($planToUseInMonths!== null && $planToUseInMonths < 0) {
+        if (null !== $planToUseInMonths && $planToUseInMonths < 0) {
             throw new \InvalidArgumentException('Item::$planToUseInMonths should be positive');
         }
 

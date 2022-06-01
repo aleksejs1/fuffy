@@ -35,8 +35,8 @@ class ItemTest extends TestCase
      */
     public function testPrice(): void
     {
-        $user1 = new User();
-        $item = new Item($user1);
+        $user = new User();
+        $item = new Item($user);
 
         $this->assertEquals('0.00', $item->getPrice());
         $price = '1.01';
@@ -45,5 +45,50 @@ class ItemTest extends TestCase
         $priceWithComa = '1,01';
         $item->setPrice($priceWithComa);
         $this->assertEquals($price, $item->getPrice());
+        $negativePrice = ' -1.01';
+        $this->expectException(\InvalidArgumentException::class);
+        $item->setPrice($negativePrice);
+    }
+
+    /**
+     * @covers \App\Entity\Item::setPrice
+     */
+    public function testNonNumericPrice(): void
+    {
+        $user = new User();
+        $item = new Item($user);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $item->setPrice('Eleven');
+    }
+
+    /**
+     * @covers \App\Entity\Item::setPrice
+     */
+    public function testNonNumericPriceInConstructor(): void
+    {
+        $user = new User();
+        $this->expectException(\InvalidArgumentException::class);
+        $item = new Item(owner: $user, price: 'Eleven');
+    }
+
+    /**
+     * @covers \App\Entity\Item::setPlanToUseInMonths
+     * @covers \App\Entity\Item::getPlanToUseInMonths
+     */
+    public function testSetPlanToUseInMonths(): void
+    {
+        $user = new User();
+        $item = new Item($user);
+
+        $item->setPlanToUseInMonths(1);
+        $this->assertEquals(1, $item->getPlanToUseInMonths());
+        $item->setPlanToUseInMonths(0);
+        $this->assertEquals(0, $item->getPlanToUseInMonths());
+        $item->setPlanToUseInMonths(null);
+        $this->assertNull($item->getPlanToUseInMonths());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $item->setPlanToUseInMonths(-1);
     }
 }
