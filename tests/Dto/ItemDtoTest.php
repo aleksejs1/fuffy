@@ -101,6 +101,8 @@ class ItemDtoTest extends TestCase
         $this->assertEquals(1, $itemDto->getMonthsInUse());
         $this->assertEquals(23, $itemDto->getExpireAfter());
         $this->assertEquals('48.87', $itemDto->getCurrentValue());
+        $this->assertEquals('0.1', $itemDto->getTotalYears());
+        $this->assertEquals('-1.9', $itemDto->getExtraYears());
         $this->assertNull($itemDto->getCanChange());
 
         CarbonImmutable::setTestNow(Carbon::createFromDate(2022, 4, 4));
@@ -109,6 +111,8 @@ class ItemDtoTest extends TestCase
         $this->assertEquals(2, $itemDto->getMonthsInUse());
         $this->assertEquals(22, $itemDto->getExpireAfter());
         $this->assertEquals('46.75', $itemDto->getCurrentValue());
+        $this->assertEquals('0.2', $itemDto->getTotalYears());
+        $this->assertEquals('-1.8', $itemDto->getExtraYears());
         $this->assertNull($itemDto->getCanChange());
 
         CarbonImmutable::setTestNow(Carbon::createFromDate(2022, 3, 19));
@@ -133,6 +137,8 @@ class ItemDtoTest extends TestCase
         $this->assertEquals(18, $itemDto->getMonthsInUse());
         $this->assertEquals(6, $itemDto->getExpireAfter());
         $this->assertEquals('12.75', $itemDto->getCurrentValue());
+        $this->assertEquals('1.5', $itemDto->getTotalYears());
+        $this->assertEquals('-0.5', $itemDto->getExtraYears());
         $this->assertNull($itemDto->getCanChange());
 
         CarbonImmutable::setTestNow(Carbon::createFromDate(2024, 8, 4));
@@ -141,6 +147,8 @@ class ItemDtoTest extends TestCase
         $this->assertEquals(30, $itemDto->getMonthsInUse());
         $this->assertEquals(-6, $itemDto->getExpireAfter());
         $this->assertEquals('0', $itemDto->getCurrentValue());
+        $this->assertEquals('2.5', $itemDto->getTotalYears());
+        $this->assertEquals('0.5', $itemDto->getExtraYears());
         $this->assertEquals('60', $itemDto->getCanChange());
     }
 }

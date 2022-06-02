@@ -22,7 +22,7 @@ final class Version20220507143125 extends AbstractMigration
                 owner_id INT UNSIGNED NOT NULL,
                 name VARCHAR(255) DEFAULT NULL,
                 model VARCHAR(255) DEFAULT NULL,
-                price NUMERIC(10, 2) NOT NULL,
+                price NUMERIC(10, 2) DEFAULT NULL,
                 buy_date DATETIME DEFAULT NULL,
                 end_date DATETIME DEFAULT NULL,
                 plan_to_use_in_months INT UNSIGNED DEFAULT NULL,
