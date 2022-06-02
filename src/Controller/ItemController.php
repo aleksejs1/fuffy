@@ -7,7 +7,8 @@ use App\Entity\User;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
 use App\Security\Voter\ItemVoter;
-use App\Service\ItemService;
+use App\Service\Item\ItemFormHandler;
+use App\Service\Item\ItemService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            throw new \Exception('User expected.');
+            return $this->redirect('login');
         }
 
         return $this->render('item/index.html.twig', [
@@ -30,19 +31,16 @@ class ItemController extends AbstractController
     }
 
     #[Route('/new', name: 'app_item_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ItemRepository $itemRepository): Response
+    public function new(Request $request, ItemFormHandler $itemFormHandler): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            throw new \Exception('User expected');
+            return $this->redirect('login');
         }
         $item = new Item($user);
         $form = $this->createForm(ItemType::class, $item);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $itemRepository->add($item, true);
-
+        if ($itemFormHandler->handle($form, $request)) {
             return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -52,26 +50,13 @@ class ItemController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_item_show', methods: ['GET'])]
-    public function show(Item $item): Response
-    {
-        $this->denyAccessUnlessGranted(ItemVoter::VIEW, $item);
-
-        return $this->render('item/show.html.twig', [
-            'item' => $item,
-        ]);
-    }
-
     #[Route('/{id}/edit', name: 'app_item_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Item $item, ItemRepository $itemRepository): Response
+    public function edit(Request $request, Item $item, ItemFormHandler $itemFormHandler): Response
     {
         $this->denyAccessUnlessGranted(ItemVoter::EDIT, $item);
         $form = $this->createForm(ItemType::class, $item);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $itemRepository->add($item, true);
-
+        if ($itemFormHandler->handle($form, $request)) {
             return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
         }
 

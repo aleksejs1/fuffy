@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Item;
 
 use App\Dto\ItemDto;
 use App\Entity\Item;
