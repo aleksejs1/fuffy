@@ -16,6 +16,7 @@
     <body>
         {% if app.user %}
             <a href="{{ path('app_logout') }}">Logout</a>
+            <a href="{{ path('user_settings') }}">Settings</a>
         {% endif %}
         {% block body %}{% endblock %}
     </body>

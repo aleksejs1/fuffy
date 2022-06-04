@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+    <h1>Settings</h1>
+
+    {{ form_start(userForm) }}
+        {{ form_row(userForm.plainPassword, {
+            label: 'Password'
+        }) }}
+
+        <button type="submit" class="btn">Change</button>
+    {{ form_end(userForm) }}
+
+    <a href="{{ path('user_delete') }}">Delete account</a>
+{% endblock %}

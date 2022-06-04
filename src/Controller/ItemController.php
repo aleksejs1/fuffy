@@ -22,7 +22,7 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            return $this->redirect('login');
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('item/index.html.twig', [
@@ -35,7 +35,7 @@ class ItemController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            return $this->redirect('login');
+            return $this->redirectToRoute('login');
         }
         $item = new Item($user);
         $form = $this->createForm(ItemType::class, $item);
