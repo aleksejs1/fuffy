@@ -22,6 +22,7 @@ final class Version20220507140827 extends AbstractMigration
                 username VARCHAR(180) NOT NULL, 
                 roles JSON NOT NULL, 
                 password VARCHAR(255) NOT NULL, 
+                quota INT UNSIGNED NOT NULL DEFAULT 20, 
                 UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), 
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB

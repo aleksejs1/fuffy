@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const DEFAULT_QUOTA = 20;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['unsigned' => true])]
@@ -29,6 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::STRING)]
     private string $password = '';
+
+    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['unsigned' => true, 'default' => self::DEFAULT_QUOTA])]
+    private int $quota = self::DEFAULT_QUOTA;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Item::class)]
     private Collection $items;
@@ -117,6 +122,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getQuota(): int
+    {
+        return $this->quota;
+    }
+
+    public function setQuota(int $quota): self
+    {
+        $this->quota = $quota;
+
+        return $this;
     }
 
     public function getItems(): Collection

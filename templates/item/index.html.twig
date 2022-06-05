@@ -5,6 +5,12 @@
 {% block body %}
     <h1>Item index</h1>
 
+    {% if app.session.flashBag.has('error') %}
+        {% for msg in app.session.flashBag.get('error') %}
+            {{ msg }}
+        {% endfor %}
+    {% endif %}
+
     <table class="table">
         <thead>
             <tr>

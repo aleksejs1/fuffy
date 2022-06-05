@@ -39,6 +39,13 @@ class ItemController extends AbstractController
         if (!$user instanceof User) {
             return $this->redirectToRoute('login');
         }
+
+        if ($user->getItems()->count() >= $user->getQuota()) {
+            $this->addFlash('error', 'No quota left');
+
+            return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $item = new Item($user);
         $form = $this->createForm(ItemType::class, $item);
 
