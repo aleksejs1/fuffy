@@ -7,8 +7,10 @@ use App\Entity\User;
 use App\Form\ItemType;
 use App\Repository\ItemRepository;
 use App\Security\Voter\ItemVoter;
+use App\Service\Item\ItemExportService;
 use App\Service\Item\ItemFormHandler;
 use App\Service\Item\ItemService;
+use App\Service\UserQuotaService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,14 +35,14 @@ class ItemController extends AbstractController
     }
 
     #[Route('/new', name: 'app_item_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ItemFormHandler $itemFormHandler): Response
+    public function new(Request $request, ItemFormHandler $itemFormHandler, UserQuotaService $quotaService): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('login');
         }
 
-        if ($user->getItems()->count() >= $user->getQuota()) {
+        if ($quotaService->checkNoQuota($user)) {
             $this->addFlash('error', 'No quota left');
 
             return $this->redirectToRoute('app_item_index', [], Response::HTTP_SEE_OTHER);
@@ -60,38 +62,15 @@ class ItemController extends AbstractController
     }
 
     #[Route('/export', name: 'app_item_export', methods: ['GET'])]
-    public function export(Request $request): Response
+    public function export(ItemExportService $itemExportService): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('login');
         }
 
-        $response = new StreamedResponse(function () use ($user) {
-            $csv = fopen('php://output', 'wb');
-            fputcsv($csv, [
-                'Id',
-                'Name',
-                'Model',
-                'Price',
-                'Buy date',
-                'End date',
-                'Plan to use in months',
-            ]);
-            foreach ($user->getItems() as $item) {
-                if (!$item instanceof Item) {
-                    throw new \Exception('Something went wrong. Broken data. Item is not item');
-                }
-                fputcsv($csv, [
-                    $item->getId(),
-                    $item->getName(),
-                    $item->getModel(),
-                    $item->getPrice(),
-                    $item->getBuyDate()?->format('d.m.Y H:i:s'),
-                    $item->getEndDate()?->format('d.m.Y H:i:s'),
-                    $item->getPlanToUseInMonths(),
-                ]);
-            }
+        $response = new StreamedResponse(function () use ($user, $itemExportService) {
+            $itemExportService->exportCsv($user);
         });
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
